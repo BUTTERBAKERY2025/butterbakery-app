@@ -1,0 +1,166 @@
+{
+  "ApplicationName": "ButterBakery",
+  "EnvironmentName": "butterbakery-blue",
+  "SolutionStackName": "64bit Amazon Linux 2 v5.8.0 running Node.js 20",
+  "OptionSettings": [
+    {
+      "Namespace": "aws:elasticbeanstalk:application:environment",
+      "OptionName": "NODE_ENV",
+      "Value": "production"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:application:environment",
+      "OptionName": "RDS_HOSTNAME",
+      "Value": "REPLACE_WITH_RDS_HOSTNAME"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:application:environment",
+      "OptionName": "RDS_PORT",
+      "Value": "5432"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:application:environment",
+      "OptionName": "RDS_DB_NAME",
+      "Value": "butterbakery"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:application:environment",
+      "OptionName": "RDS_USERNAME",
+      "Value": "REPLACE_WITH_DB_USERNAME"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:application:environment",
+      "OptionName": "RDS_PASSWORD",
+      "Value": "REPLACE_WITH_DB_PASSWORD"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:application:environment",
+      "OptionName": "BACKUP_S3_BUCKET",
+      "Value": "REPLACE_WITH_S3_BUCKET"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:environment",
+      "OptionName": "EnvironmentType",
+      "Value": "LoadBalanced"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:environment",
+      "OptionName": "LoadBalancerType",
+      "Value": "application"
+    },
+    {
+      "Namespace": "aws:autoscaling:asg",
+      "OptionName": "MinSize",
+      "Value": "2"
+    },
+    {
+      "Namespace": "aws:autoscaling:asg",
+      "OptionName": "MaxSize",
+      "Value": "10"
+    },
+    {
+      "Namespace": "aws:autoscaling:launchconfiguration",
+      "OptionName": "InstanceType",
+      "Value": "t3.medium"
+    },
+    {
+      "Namespace": "aws:autoscaling:launchconfiguration",
+      "OptionName": "IamInstanceProfile",
+      "Value": "aws-elasticbeanstalk-ec2-role"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:environment:process:default",
+      "OptionName": "HealthCheckPath",
+      "Value": "/health"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:healthreporting:system",
+      "OptionName": "SystemType",
+      "Value": "enhanced"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:cloudwatch:logs",
+      "OptionName": "StreamLogs",
+      "Value": "true"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:cloudwatch:logs",
+      "OptionName": "RetentionInDays",
+      "Value": "30"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:cloudwatch:logs",
+      "OptionName": "DeleteOnTerminate",
+      "Value": "false"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:command",
+      "OptionName": "DeploymentPolicy",
+      "Value": "AllAtOnce"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:command",
+      "OptionName": "BatchSizeType",
+      "Value": "Percentage"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:command",
+      "OptionName": "BatchSize",
+      "Value": "50"
+    },
+    {
+      "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+      "OptionName": "RollingUpdateEnabled",
+      "Value": "true"
+    },
+    {
+      "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+      "OptionName": "RollingUpdateType",
+      "Value": "Health"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:container:nodejs",
+      "OptionName": "NodeVersion",
+      "Value": "20.18.1"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:container:nodejs",
+      "OptionName": "NodeCommand",
+      "Value": "npm start"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:environment:proxy",
+      "OptionName": "ProxyServer",
+      "Value": "nginx"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:environment:proxy:staticfiles",
+      "OptionName": "/static",
+      "Value": "client/dist/assets"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:environment:proxy:staticfiles",
+      "OptionName": "/images",
+      "Value": "public/images"
+    },
+    {
+      "Namespace": "aws:elasticbeanstalk:environment:proxy:staticfiles",
+      "OptionName": "/fonts",
+      "Value": "public/fonts"
+    }
+  ],
+  "Tags": [
+    {
+      "Key": "application",
+      "Value": "ButterBakery"
+    },
+    {
+      "Key": "environment",
+      "Value": "Production"
+    }
+  ],
+  "Tier": {
+    "Name": "WebServer",
+    "Type": "Standard"
+  }
+}

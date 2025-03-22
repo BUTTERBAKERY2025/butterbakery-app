@@ -1,0 +1,49 @@
+{
+  "DBName": "butterbakery",
+  "DBInstanceIdentifier": "butterbakery-db",
+  "AllocatedStorage": 20,
+  "DBInstanceClass": "db.t3.small",
+  "Engine": "postgres",
+  "MasterUsername": "REPLACE_WITH_DB_ADMIN_USERNAME",
+  "MasterUserPassword": "REPLACE_WITH_DB_ADMIN_PASSWORD",
+  "VpcSecurityGroupIds": [ "REPLACE_WITH_SECURITY_GROUP_ID" ],
+  "DBSubnetGroupName": "REPLACE_WITH_SUBNET_GROUP_NAME",
+  "BackupRetentionPeriod": 7,
+  "MultiAZ": true,
+  "EngineVersion": "14.9",
+  "AutoMinorVersionUpgrade": true,
+  "PubliclyAccessible": false,
+  "StorageType": "gp2",
+  "Port": 5432,
+  "StorageEncrypted": true,
+  "EnablePerformanceInsights": true,
+  "PerformanceInsightsRetentionPeriod": 7,
+  "DeletionProtection": true,
+  "Tags": [
+    {
+      "Key": "application",
+      "Value": "ButterBakery"
+    },
+    {
+      "Key": "environment",
+      "Value": "production"
+    }
+  ],
+  "EnableIAMDatabaseAuthentication": false,
+  "MonitoringInterval": 60,
+  "EnableCloudwatchLogsExports": ["postgresql", "upgrade"],
+  "CopyTagsToSnapshot": true,
+  "DBParameterGroupName": "butterbakery-parameter-group",
+  "parameters": {
+    "max_connections": "200",
+    "shared_buffers": "512MB",
+    "effective_cache_size": "1536MB",
+    "work_mem": "4MB",
+    "maintenance_work_mem": "64MB",
+    "checkpoint_timeout": "300",
+    "log_min_duration_statement": "500",
+    "log_connections": "1",
+    "log_disconnections": "1",
+    "log_statement": "ddl"
+  }
+}
