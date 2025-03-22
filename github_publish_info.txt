@@ -1,0 +1,17 @@
+قائمة الملفات المضمنة في حزمة النشر:
+total 28
+drwxr-xr-x 1 runner runner  238 Mar 22 10:44 .
+drwxr-xr-x 1 runner runner 1324 Mar 22 10:44 ..
+drwxr-xr-x 1 runner runner   76 Mar 22 10:44 deploy
+-rw-r--r-- 1 runner runner 1494 Mar 22 10:44 github-commit-message.txt
+-rw-r--r-- 1 runner runner   67 Mar 22 10:44 github_publish_info.txt
+-rw-r--r-- 1 runner runner 6330 Mar 22 10:44 RENDER_DEPLOYMENT_GUIDE.md
+-rw-r--r-- 1 runner runner 3431 Mar 22 10:44 RENDER_QUICKSTART.md
+-rw-r--r-- 1 runner runner  494 Mar 22 10:44 render.yaml
+-rw-r--r-- 1 runner runner 1442 Mar 22 10:44 start.js
+
+
+معلومات التزامات Git:
+1e0268c - Agent checkpoint (7 hours ago)
+9aa7e09 - Add deployment guide and scripts for Render.com. (7 hours ago)
+3393f29 - Initial commit: Added basic project files for deployment on Render.com (7 hours ago)

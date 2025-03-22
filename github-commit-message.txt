@@ -1,0 +1,25 @@
+إضافة دعم النشر على Render.com مع تكامل قاعدة بيانات PostgreSQL
+
+تم في هذا الالتزام إضافة ميزات جديدة لدعم النشر على منصة Render.com:
+
+• إضافة ملف start.js لتشغيل التطبيق في بيئة الإنتاج
+• إضافة ملف render.yaml لتهيئة الخدمة والموارد تلقائياً
+• إضافة أداة فحص الاتصال بقاعدة البيانات (check_database.js)
+• إنشاء نص برمجي لإعداد حزمة النشر (prepare_for_render.sh)
+• توثيق شامل لعملية النشر في RENDER_DEPLOYMENT_GUIDE.md
+• دليل سريع للتنفيذ في RENDER_QUICKSTART.md
+
+هذه التغييرات تسمح بنشر التطبيق بسهولة على Render.com مع دعم كامل لقاعدة بيانات PostgreSQL.
+
+Add Render.com deployment support with PostgreSQL database integration
+
+This commit adds new features to support deployment on Render.com platform:
+
+• Added start.js for running the application in production
+• Added render.yaml for automatic service configuration
+• Added database connection check tool (check_database.js)
+• Created deployment bundle preparation script (prepare_for_render.sh)
+• Comprehensive deployment documentation in RENDER_DEPLOYMENT_GUIDE.md
+• Quick implementation guide in RENDER_QUICKSTART.md
+
+These changes allow easy deployment on Render.com with full PostgreSQL database support.
