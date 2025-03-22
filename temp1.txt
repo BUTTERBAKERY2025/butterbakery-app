@@ -1,0 +1,26 @@
+  async getCashierPerformance(branchId: number, date: Date): Promise<any[]> {
+    const formattedDate = format(date, 'yyyy-MM-dd');
+    const cashiers = (await this.getUsers()).filter(user => user.role === 'cashier' && user.branchId === branchId);
+    const results = [];
+    
+    for (const cashier of cashiers) {
+      const salesData = await this.getDailySalesByCashierAndDate(cashier.id, formattedDate);
+      
+      if (salesData) {
+        results.push({
+          cashierId: cashier.id,
+          name: cashier.name,
+          avatar: cashier.avatar,
+          shiftStart: salesData.shiftStart,
+          shiftEnd: salesData.shiftEnd,
+          totalSales: salesData.totalSales,
+          discrepancy: salesData.discrepancy || 0,
+          totalTransactions: salesData.totalTransactions,
+          averageTicket: salesData.averageTicket,
+          performance: salesData.discrepancy === 0 ? 100 : salesData.discrepancy < 0 ? 85 : 90
+        });
+      }
+    }
+    
+    return results;
+  }

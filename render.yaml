@@ -3,8 +3,23 @@ services:
   - type: web
     name: butterbakery-app
     env: node
+    region: frankfurt # منطقة خادم التطبيق (يمكن تغييرها حسب الحاجة)
+    plan: free
+    numInstances: 1
     buildCommand: npm install
     startCommand: node start.js
+    healthCheckPath: /health
+    autoDeploy: false # تعطيل النشر التلقائي للتحكم اليدوي بالنشر
+    nodeVersion: 20.x # تحديد إصدار نود بشكل صريح
+    pullRequestPreviewsEnabled: false
+
+    # إعدادات وحدات التخزين المؤقت لتحسين الأداء
+    disk:
+      name: node_modules
+      mountPath: /opt/render/project/node_modules
+      sizeGB: 1
+      
+    # إعدادات زمن التشغيل
     envVars:
       - key: NODE_ENV
         value: production
@@ -14,10 +29,27 @@ services:
         fromDatabase:
           name: butterbakery-db
           property: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: TZ
+        value: Asia/Riyadh # منطقة زمنية مناسبة للمملكة العربية السعودية
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=512
+      - key: VITE_VERSION
+        value: '1.0.0'
 
 databases:
   # قاعدة بيانات PostgreSQL
   - name: butterbakery-db
     plan: free
+    region: frankfurt # منطقة قاعدة البيانات (يجب أن تكون متطابقة مع منطقة التطبيق)
     databaseName: butterbakery
     user: butterbakery_user
+    ipAllowList: [] # السماح بالوصول من أي مكان (يمكن تقييده لاحقاً)
+
+# المتغيرات العامة للمشروع
+envVarGroups:
+  - name: butterbakery-config
+    envVars:
+      - key: PROJECT_NAME
+        value: ButterBakery Operations Platform

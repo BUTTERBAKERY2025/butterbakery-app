@@ -1,0 +1,68 @@
+async getCashierPerformance(branchId: number, date: Date): Promise<any[]> {
+  const formattedDate = format(date, "yyyy-MM-dd");
+  let cashiers = [];
+  
+  try {
+    // إذا كان branchId يساوي 0، نجلب جميع الكاشيرين من جميع الفروع
+    if (branchId === 0) {
+      cashiers = await db.select().from(users).where(eq(users.role, "cashier"));
+    } else {
+      // فلترة الكاشيرين حسب الفرع المحدد
+      cashiers = await db.select().from(users).where(
+        and(
+          eq(users.role, "cashier"),
+          eq(users.branchId, branchId)
+        )
+      );
+    }
+    
+    const results = [];
+    
+    for (const cashier of cashiers) {
+      // استعلام المبيعات للكاشير
+      const dailySalesQuery = await db.select().from(dailySales).where(
+        and(
+          eq(dailySales.cashierId, cashier.id),
+          eq(dailySales.date, formattedDate)
+        )
+      );
+      
+      const salesData = dailySalesQuery[0];
+      
+      if (salesData) {
+        // إضافة معلومات الفرع للعرض التجميعي عندما يكون branchId = 0
+        let branchName = "";
+        if (branchId === 0 && salesData.branchId) {
+          const branchData = await db.select().from(branches).where(eq(branches.id, salesData.branchId));
+          if (branchData && branchData.length > 0) {
+            branchName = branchData[0].name;
+          }
+        }
+        
+        results.push({
+          cashierId: cashier.id,
+          name: cashier.name,
+          avatar: cashier.avatar,
+          // إضافة اسم الفرع عندما يكون branchId = 0 (عرض كل الفروع)
+          branchId: salesData.branchId,
+          branchName: branchId === 0 ? branchName : undefined,
+          shiftStart: salesData.shiftStart,
+          shiftEnd: salesData.shiftEnd,
+          totalSales: salesData.totalSales,
+          discrepancy: salesData.discrepancy || 0,
+          totalTransactions: salesData.totalTransactions,
+          averageTicket: salesData.averageTicket,
+          performance: salesData.discrepancy === 0 ? 100 : salesData.discrepancy < 0 ? 85 : 90
+        });
+      }
+    }
+    
+    // ترتيب النتائج حسب المبيعات (تنازليًا)
+    results.sort((a, b) => b.totalSales - a.totalSales);
+    
+    return results;
+  } catch (error) {
+    console.error("Error in getCashierPerformance:", error);
+    return [];
+  }
+}
