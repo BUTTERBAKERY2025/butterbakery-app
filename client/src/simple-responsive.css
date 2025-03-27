@@ -1,0 +1,63 @@
+/* تنسيقات بسيطة للاستجابة للشاشات */
+
+/* الشاشات الصغيرة - الهواتف */
+@media (max-width: 640px) {
+  .responsive-container {
+    width: 100%;
+    padding: 0 0.5rem;
+  }
+  
+  .sm-hidden {
+    display: none !important;
+  }
+  
+  .sm-full-width {
+    width: 100% !important;
+  }
+  
+  .sm-text-sm {
+    font-size: 0.875rem !important;
+  }
+  
+  .sm-p-1 {
+    padding: 0.25rem !important;
+  }
+}
+
+/* الشاشات المتوسطة - الأجهزة اللوحية */
+@media (min-width: 641px) and (max-width: 768px) {
+  .responsive-container {
+    width: 100%;
+    padding: 0 1rem;
+  }
+  
+  .md-text-base {
+    font-size: 1rem !important;
+  }
+}
+
+/* الشاشات الكبيرة - الحواسيب */
+@media (min-width: 769px) {
+  .responsive-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+}
+
+/* دعم العربية والـ RTL */
+html[dir="rtl"] .rtl-text-right {
+  text-align: right !important;
+}
+
+html[dir="rtl"] .rtl-mr-auto {
+  margin-right: auto !important;
+  margin-left: 0 !important;
+}
+
+/* تنسيقات الطباعة */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

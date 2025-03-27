@@ -1,0 +1,518 @@
+import pdfMake from 'pdfmake/build/pdfmake';
+import { ExportableData, ExportConfig } from './ExportUtils';
+import { formatCurrency } from '@/lib/utils';
+import { reshape } from 'arabic-reshaper';
+
+/**
+ * دالة محسنة تماماً لمعالجة النص العربي في PDFMake
+ * تتضمن آليات متعددة للتعامل مع مشاكل عرض النص العربي
+ */
+function reshapeArabicText(text: string | number | undefined | null): string {
+  if (text === undefined || text === null) return '';
+
+  // تحويل النص إلى سلسلة نصية
+  let textStr = typeof text === 'string' ? text : String(text);
+
+  // معالجة الأرقام والعملات
+  if (/^[\d\s.,٠-٩]+(\s*SAR|\s*ر.س)?$/i.test(textStr)) {
+    return textStr.replace(/SAR/i, 'ر.س');
+  }
+
+  // قائمة بالمصطلحات الشائعة في التطبيق
+  const commonTerms: Record<string, boolean> = {
+    'المجموع': true,
+    'الفرع': true,
+    'التاريخ': true,
+    'الكاشير': true,
+    'المبيعات النقدية': true,
+    'مبيعات الشبكة': true,
+    'إجمالي المبيعات': true,
+    'عدد المعاملات': true,
+    'متوسط قيمة الفاتورة': true,
+    'فروقات الصندوق': true,
+    'عجز': true,
+    'زيادة': true,
+    'الملخص المالي': true,
+    'تقرير المبيعات': true,
+    'يومية المبيعات': true,
+    'اليومية المجمعة': true
+  };
+
+  // التحقق مما إذا كان النص يحتوي على أي من المصطلحات الشائعة
+  for (const term in commonTerms) {
+    if (textStr.includes(term)) {
+      // للمصطلحات الشائعة، نستخدم علامات التوجيه فقط بدون إعادة تشكيل
+      return `\u202B${textStr}\u202C`;
+    }
+  }
+
+  try {
+    // استخدام arabic-reshaper بإعدادات بسيطة
+    const reshaped = reshape(textStr);
+    // إضافة علامات التوجيه للنص من اليمين إلى اليسار
+    return `\u202B${reshaped}\u202C`;
+  } catch (error) {
+    console.error('Error reshaping Arabic text:', error);
+    // في حالة الفشل، إضافة علامات التوجيه لتحسين العرض
+    return `\u202B${textStr}\u202C`;
+  }
+}
+
+// تحديد الخطوط مع تحسين دعم الخطوط العربية
+const fonts = {
+  // خط نوتو سانس العربي - خط رئيسي للمحتوى العربي
+  'NotoSansArabic': {
+    normal: '/fonts/NotoSansArabic-Regular.ttf',
+    bold: '/fonts/NotoSansArabic-Bold.ttf',
+    italics: '/fonts/NotoSansArabic-Regular.ttf',
+    bolditalics: '/fonts/NotoSansArabic-Bold.ttf'
+  },
+  // خط أميري - خط عربي أكثر تقليدية للعناوين
+  'Amiri': {
+    normal: '/fonts/Amiri-Regular.ttf',
+    bold: '/fonts/Amiri-Bold.ttf',
+    italics: '/fonts/Amiri-Italic.ttf',
+    bolditalics: '/fonts/Amiri-BoldItalic.ttf'
+  },
+  // خط Arial مضاف كاحتياطي للنصوص غير العربية
+  'Arial': {
+    normal: 'Helvetica',
+    bold: 'Helvetica-Bold',
+    italics: 'Helvetica-Oblique',
+    bolditalics: 'Helvetica-BoldOblique'
+  }
+};
+
+// تكوين الوثيقة الافتراضي مع تحسينات للغة العربية
+const defaultDocumentConfiguration = {
+  // تعيين إعدادات النص الافتراضية
+  defaultStyle: {
+    font: 'NotoSansArabic', // استخدام الخط العربي بشكل افتراضي
+    alignment: 'right',    // محاذاة النص إلى اليمين للغة العربية
+    direction: 'rtl',      // اتجاه النص من اليمين إلى اليسار
+    fontSize: 11,          // حجم الخط الأساسي
+    lineHeight: 1.4        // تباعد الأسطر المحسن للغة العربية
+  },
+  // إعدادات الصفحة
+  pageSize: 'A4',
+  pageOrientation: 'portrait', // وضع الصفحة
+  pageMargins: [30, 30, 30, 30] as [number, number, number, number],
+  
+  // إعدادات PDF الإضافية
+  info: {
+    title: 'تقرير بتر بيكري',
+    author: 'نظام بتر بيكري',
+    subject: 'تقرير مبيعات',
+    keywords: 'تقرير,مبيعات,محاسبة,بتر بيكري'
+  },
+  
+  // تفعيل ميزات RTL
+  rtl: true
+};
+
+// دمج إعدادات pdfMake
+pdfMake.fonts = fonts;
+pdfMake.vfs = {};
+
+// انشاء PDFMaker كائن بإعدادات وخطوط عربية
+const virtualPdfMake = pdfMake;
+
+/**
+ * إنشاء تقرير PDF باستخدام PDFMake مع دعم كامل للغة العربية
+ * نسخة محسنة تماماً مع معالجة أكثر ذكاءً للنصوص العربية وتنسيق أفضل
+ * 
+ * @param data بيانات التقرير
+ * @param config إعدادات التقرير
+ * @param fileName اسم الملف (اختياري)
+ */
+export const generateArabicPDF = (data: ExportableData, config: ExportConfig, fileName?: string) => {
+  try {
+    // تسجيل بداية عملية إنشاء PDF للتشخيص
+    console.log(`Generating Arabic PDF for: ${config.title}`, {
+      dataSize: data.length,
+      headers: config.headers.length,
+      fileName: fileName || config.fileName
+    });
+  // استخراج البيانات الأساسية للتقرير
+  const branchName = config.footer && config.footer.includes(':') ? 
+    config.footer.split(':')[1]?.trim() : undefined;
+
+  // استخراج بيانات المجموع إذا وجدت
+  const totalRow = data.find((item: any) => 
+    item.cashierName?.includes('المجموع') || 
+    (typeof item.id === 'number' && item.id === 0)
+  );
+
+  // تحضير رؤوس الجدول مع معالجة النص العربي
+  const tableHeaders = config.headers.map(header => ({
+    text: reshapeArabicText(header.label),
+    style: 'tableHeader',
+    alignment: 'center'
+  }));
+
+  // تحضير صفوف الجدول
+  const tableRows = data.map((item: any) => {
+    const isTotal = item.cashierName?.includes('المجموع') || 
+                  (typeof item.id === 'number' && item.id === 0);
+
+    return config.headers.map(header => {
+      let cellValue = item[header.key];
+
+      // معالجة خاصة للتوقيع
+      if (header.key === 'signature' && 
+          cellValue && 
+          typeof cellValue === 'string' && 
+          cellValue.startsWith('data:image')) {
+        cellValue = '✓';
+      }
+
+      // معالجة خاصة للفرق (عجز/زيادة)
+      const isDiscrepancy = header.key === 'discrepancy' || header.key === 'cashDiscrepancy';
+      const cellStyle: string[] = isTotal ? ['totalCell'] : [];
+
+      if (isDiscrepancy && cellValue) {
+        const value = parseFloat(String(cellValue));
+        if (value < 0) {
+          cellStyle.push('negativeAmount');
+          cellValue = reshapeArabicText(`عجز ${Math.abs(value).toLocaleString('ar-SA')}`);
+        } else if (value > 0) {
+          cellStyle.push('positiveAmount');
+          cellValue = reshapeArabicText(`زيادة ${value.toLocaleString('ar-SA')}`);
+        }
+      }
+
+      // تنسيق القيم الرقمية للجدول
+      if (typeof cellValue === 'number' && !isNaN(cellValue) && header.key !== 'id') {
+        if (header.key.includes('percentage')) {
+          cellValue = `${cellValue}%`;
+        } else {
+          cellValue = cellValue.toLocaleString('ar-SA');
+        }
+      }
+
+      // تحديد محاذاة الخلية
+      let alignment = 'right';
+      if (header.key === 'signature' || header.key.includes('status') ||
+          header.key.includes('percentage')) {
+        alignment = 'center';
+      } else if (header.key.includes('amount') || header.key.includes('sales') ||
+                header.key.includes('discrepancy') || header.key.includes('price') ||
+                header.key.includes('target') || header.key.includes('ticket')) {
+        alignment = 'left';
+      }
+
+      // معالجة النص العربي للخلية
+      const finalText = typeof cellValue === 'string' && 
+        (header.key === 'name' || 
+         header.key === 'branchName' || 
+         header.key === 'cashierName' || 
+         header.key === 'status' ||
+         header.key === 'notes' ||
+         header.key === 'shiftType' ||
+         cellValue.includes('عجز') ||
+         cellValue.includes('زيادة'))
+        ? reshapeArabicText(cellValue)
+        : cellValue || '';
+
+      return { 
+        text: finalText, 
+        style: cellStyle, 
+        alignment 
+      };
+    });
+  });
+
+  // إنشاء محتوى المستند
+  const docDefinition = {
+    // تعيين اتجاه المستند للغة العربية
+    ...defaultDocumentConfiguration,
+    // محتوى المستند
+    content: [
+      // رأس التقرير مع معلومات الشركة
+      {
+        columns: [
+          {
+            width: '*',
+            text: ''
+          },
+          {
+            width: 'auto',
+            stack: [
+              { text: reshapeArabicText('بتر بيكري للحلويات'), style: 'companyName' },
+              { text: reshapeArabicText('س.ت: 1234567890'), style: 'companyDetail' },
+              { text: reshapeArabicText('ر.ض: 301234567800003'), style: 'companyDetail' }
+            ],
+            alignment: 'right'
+          }
+        ],
+        marginBottom: 20
+      },
+      // عنوان التقرير الرئيسي
+      {
+        text: reshapeArabicText(config.title),
+        style: 'header',
+        alignment: 'center',
+        marginBottom: 10
+      },
+      // معلومات إضافية (الفرع والتاريخ)
+      branchName ? {
+        text: reshapeArabicText(`الفرع: ${branchName}`),
+        style: 'subheader',
+        alignment: 'center',
+        marginBottom: 5
+      } : null,
+      {
+        text: reshapeArabicText(`تاريخ التقرير: ${new Date().toLocaleDateString('ar-SA')}`),
+        style: 'subheader',
+        alignment: 'center',
+        marginBottom: 20
+      },
+      // ملخص مالي إذا كان هناك صف للمجموع
+      totalRow ? {
+        style: 'summaryBox',
+        stack: [
+          { text: reshapeArabicText('الملخص المالي'), style: 'summaryTitle', alignment: 'center' },
+          {
+            columns: [
+              { 
+                width: '*',
+                stack: [
+                  // المبيعات النقدية
+                  {
+                    columns: [
+                      { width: '*', text: reshapeArabicText('المبيعات النقدية:'), style: 'summaryLabel' },
+                      { 
+                        width: 'auto', 
+                        text: typeof totalRow.totalCashSales === 'number' ? 
+                          totalRow.totalCashSales.toLocaleString('ar-SA') : 
+                          totalRow.totalCashSales || '0', 
+                        style: 'summaryValue' 
+                      }
+                    ],
+                    marginBottom: 5
+                  },
+                  // مبيعات الشبكة
+                  {
+                    columns: [
+                      { width: '*', text: reshapeArabicText('مبيعات الشبكة:'), style: 'summaryLabel' },
+                      { 
+                        width: 'auto', 
+                        text: typeof totalRow.totalNetworkSales === 'number' ? 
+                          totalRow.totalNetworkSales.toLocaleString('ar-SA') : 
+                          totalRow.totalNetworkSales || '0', 
+                        style: 'summaryValue' 
+                      }
+                    ],
+                    marginBottom: 5
+                  },
+                  // فاصل
+                  { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 180, y2: 0, lineWidth: 1, lineColor: '#dddddd' }], marginBottom: 5 },
+                  // إجمالي المبيعات
+                  {
+                    columns: [
+                      { width: '*', text: reshapeArabicText('إجمالي المبيعات:'), style: ['summaryLabel', 'bold'] },
+                      { 
+                        width: 'auto', 
+                        text: typeof totalRow.totalSales === 'number' ? 
+                          totalRow.totalSales.toLocaleString('ar-SA') : 
+                          totalRow.totalSales || '0', 
+                        style: ['summaryValue', 'bold'] 
+                      }
+                    ],
+                    marginBottom: 10
+                  },
+                ]
+              },
+              // العمود الثاني
+              { 
+                width: '*',
+                stack: [
+                  // عدد المعاملات
+                  totalRow.totalTransactions ? {
+                    columns: [
+                      { width: '*', text: reshapeArabicText('عدد المعاملات:'), style: 'summaryLabel' },
+                      { 
+                        width: 'auto', 
+                        text: typeof totalRow.totalTransactions === 'number' ? 
+                          totalRow.totalTransactions.toLocaleString('ar-SA') : 
+                          totalRow.totalTransactions, 
+                        style: 'summaryValue' 
+                      }
+                    ],
+                    marginBottom: 5
+                  } : null,
+                  // متوسط قيمة الفاتورة
+                  totalRow.averageTicket ? {
+                    columns: [
+                      { width: '*', text: reshapeArabicText('متوسط قيمة الفاتورة:'), style: 'summaryLabel' },
+                      { 
+                        width: 'auto', 
+                        text: typeof totalRow.averageTicket === 'number' ? 
+                          totalRow.averageTicket.toLocaleString('ar-SA') : 
+                          totalRow.averageTicket, 
+                        style: 'summaryValue' 
+                      }
+                    ],
+                    marginBottom: 5
+                  } : null,
+                  // فاصل
+                  { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 180, y2: 0, lineWidth: 1, lineColor: '#dddddd' }], marginBottom: 5 },
+                  // فروقات الصندوق
+                  totalRow.discrepancy && totalRow.discrepancy !== 0 ? {
+                    columns: [
+                      { width: '*', text: reshapeArabicText('فروقات الصندوق:'), style: 'summaryLabel' },
+                      { 
+                        width: 'auto', 
+                        text: typeof totalRow.discrepancy === 'number' ? 
+                          parseFloat(String(totalRow.discrepancy)) < 0 ?
+                            reshapeArabicText(`عجز ${Math.abs(parseFloat(String(totalRow.discrepancy))).toLocaleString('ar-SA')}`) :
+                            reshapeArabicText(`زيادة ${Math.abs(parseFloat(String(totalRow.discrepancy))).toLocaleString('ar-SA')}`) :
+                          totalRow.discrepancy,
+                        style: [
+                          'summaryValue', 
+                          parseFloat(String(totalRow.discrepancy)) < 0 ? 'negativeAmount' : 'positiveAmount'
+                        ]
+                      }
+                    ],
+                    marginBottom: 5
+                  } : null,
+                ]
+              }
+            ]
+          }
+        ],
+        marginBottom: 20
+      } : null,
+      // جدول البيانات التفصيلي
+      {
+        table: {
+          // تنسيق العرض بناءً على الأعمدة المحددة
+          widths: config.headers.map(header => header.width ? `${header.width}%` : '*'),
+          headerRows: 1,
+          // رؤوس وصفوف الجدول
+          body: [tableHeaders, ...tableRows]
+        },
+        layout: {
+          fillColor: function(rowIndex: number, node: any, columnIndex: any) {
+            if (rowIndex === 0) {
+              return '#374785'; // لون خلفية رأس الجدول
+            } 
+            // خلفية صف المجموع
+            if (rowIndex > 0 && tableRows[rowIndex-1].some(cell => 
+              (cell.style && Array.isArray(cell.style) && cell.style.includes('totalCell')))) {
+              return '#f0f0e0';
+            }
+            // خلفية الصفوف البديلة
+            return rowIndex % 2 === 0 ? '#f5f5fa' : null;
+          },
+          // تخصيص الحدود
+          hLineWidth: function(i: number, node: any) { return 0.5; },
+          vLineWidth: function(i: number, node: any) { return 0.5; },
+          hLineColor: function(i: number, node: any) { return '#dddddd'; },
+          vLineColor: function(i: number, node: any) { return '#dddddd'; },
+        }
+      },
+      // تذييل المستند
+      {
+        text: reshapeArabicText('هذا التقرير وثيقة رسمية وسرية. جميع الحقوق محفوظة لشركة بتر بيكري © 2025'),
+        style: 'footer',
+        alignment: 'center',
+        marginTop: 30
+      }
+    ],
+    // ترويسة وتذييل المستند
+    header: function(currentPage: number, pageCount: number, pageSize: any) {
+      return [
+        {
+          text: reshapeArabicText(`صفحة ${currentPage} من ${pageCount}`),
+          alignment: 'left',
+          margin: [40, 20, 40, 0],
+          fontSize: 8,
+          color: '#888888'
+        }
+      ];
+    },
+    // تعريف الأنماط
+    styles: {
+      header: {
+        fontSize: 22,
+        bold: true,
+        color: '#374785',
+        marginBottom: 10
+      },
+      subheader: {
+        fontSize: 14,
+        color: '#666666',
+        marginBottom: 5
+      },
+      companyName: {
+        fontSize: 16,
+        bold: true,
+        color: '#333333',
+        marginBottom: 5
+      },
+      companyDetail: {
+        fontSize: 10,
+        color: '#666666',
+        marginBottom: 2
+      },
+      tableHeader: {
+        fontSize: 12,
+        bold: true,
+        color: 'white',
+        margin: [0, 5, 0, 5]
+      },
+      totalCell: {
+        bold: true,
+        fontSize: 11
+      },
+      negativeAmount: {
+        color: '#b00000'
+      },
+      positiveAmount: {
+        color: '#007800'
+      },
+      summaryBox: {
+        margin: [0, 0, 0, 20],
+        padding: 10,
+        background: '#f9f9ff',
+        border: [1, 1, 1, 1],
+        borderColor: '#ddddee',
+        borderRadius: 3
+      },
+      summaryTitle: {
+        fontSize: 16,
+        bold: true,
+        color: '#374785',
+        marginBottom: 10
+      },
+      summaryLabel: {
+        fontSize: 12,
+        color: '#666666'
+      },
+      summaryValue: {
+        fontSize: 12,
+        bold: true,
+        color: '#333333'
+      },
+      footer: {
+        fontSize: 8,
+        color: '#888888',
+        marginTop: 20
+      },
+      bold: {
+        bold: true
+      }
+    }
+  };
+
+    // تحضير اسم الملف
+    const outputFileName = fileName || `${config.fileName || 'report'}.pdf`;
+
+    // إنشاء وتحميل ملف PDF
+    virtualPdfMake.createPdf(docDefinition).download(outputFileName);
+  } catch (error) {
+    console.error('Failed to generate Arabic PDF:', error);
+    alert('حدث خطأ أثناء إنشاء ملف PDF. الرجاء المحاولة مرة أخرى.');
+  }
+};
