@@ -1,0 +1,129 @@
+/* RTL Support Styles */
+
+/* Custom scrollbar for RTL */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Adjust icons and spacing for RTL */
+[dir="rtl"] .space-x-reverse > * + * {
+  margin-right: var(--space-x-reverse, 0);
+  margin-left: 0;
+}
+
+[dir="rtl"] .ml-auto {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir="rtl"] .mr-auto {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+/* Fix alignment for RTL */
+[dir="rtl"] .text-right {
+  text-align: left;
+}
+
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+/* Fix flexbox for RTL */
+[dir="rtl"] .flex-row {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .justify-start {
+  justify-content: flex-end;
+}
+
+[dir="rtl"] .justify-end {
+  justify-content: flex-start;
+}
+
+/* Fix borders for RTL */
+[dir="rtl"] .border-l {
+  border-left: none;
+  border-right-width: 1px;
+}
+
+[dir="rtl"] .border-r {
+  border-right: none;
+  border-left-width: 1px;
+}
+
+/* Fix rounded corners for RTL */
+[dir="rtl"] .rounded-l {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+}
+
+[dir="rtl"] .rounded-r {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+/* Custom colors for butter bakery theme */
+:root {
+  --color-primary: #FFC107;
+  --color-primary-light: #FFECB3;
+  --color-primary-dark: #FFA000;
+  --color-secondary: #6B5B95;
+  --color-secondary-light: #9D92BB;
+  --color-secondary-dark: #4A3F72;
+  --color-accent: #FF6B6B;
+  --color-accent-light: #FF9E9E;
+  --color-accent-dark: #E63946;
+  --color-success: #28A745;
+  --color-danger: #DC3545;
+  --color-warning: #FFC107;
+  --color-info: #17A2B8;
+}
+
+/* Light and dark colors */
+.bg-primary-light {
+  background-color: var(--color-primary-light);
+}
+
+.bg-secondary-light {
+  background-color: var(--color-secondary-light);
+}
+
+.bg-danger-light {
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.bg-success-light {
+  background-color: rgba(40, 167, 69, 0.1);
+}
+
+.bg-warning-light {
+  background-color: rgba(255, 193, 7, 0.1);
+}
+
+.bg-info-light {
+  background-color: rgba(23, 162, 184, 0.1);
+}
+
+.text-primary-dark {
+  color: var(--color-primary-dark);
+}
+
+.text-secondary-dark {
+  color: var(--color-secondary-dark);
+}
+
+.text-accent-dark {
+  color: var(--color-accent-dark);
+}
