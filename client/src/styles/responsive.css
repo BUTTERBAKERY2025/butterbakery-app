@@ -1,0 +1,264 @@
+/* ButterBakery OPS - ملف تنسيق التجاوب مع مختلف الشاشات */
+
+/* حاوية متجاوبة */
+.responsive-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* تنسيقات عامة للشاشات المختلفة */
+@media (max-width: 640px) {
+  .responsive-container {
+    padding: 0 0.5rem;
+  }
+  
+  /* تصغير الهوامش على الشاشات الصغيرة */
+  .sm-no-padding {
+    padding: 0 !important;
+  }
+  
+  .sm-reduced-padding {
+    padding: 0.5rem !important;
+  }
+  
+  /* تقليل حجم الخط على الشاشات الصغيرة */
+  .text-responsive {
+    font-size: 0.875rem !important;
+  }
+  
+  /* تحسين عرض الجداول على الشاشات الصغيرة */
+  .responsive-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  /* تعديل عرض البطاقات على الشاشات الصغيرة */
+  .card-responsive {
+    width: 100% !important;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .responsive-container {
+    padding: 0 1rem;
+  }
+  
+  /* تعديلات الهوامش للأجهزة اللوحية */
+  .md-adjusted-padding {
+    padding: 0.75rem !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .responsive-container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .responsive-container {
+    padding: 0 2rem;
+    max-width: 1280px;
+  }
+}
+
+/* تحسينات لوحة التحكم والإحصائيات على الشاشات الصغيرة */
+@media (max-width: 768px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(1, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+  
+  .dashboard-stats-grid.col-2-sm {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .stats-card {
+    padding: 0.75rem !important;
+  }
+  
+  .stats-card-title {
+    font-size: 0.875rem !important;
+  }
+  
+  .stats-card-value {
+    font-size: 1.25rem !important;
+  }
+  
+  /* تحسين عرض المخططات البيانية على الشاشات الصغيرة */
+  .chart-container {
+    height: 200px !important;
+  }
+}
+
+/* تحسينات للنماذج على الشاشات الصغيرة */
+@media (max-width: 640px) {
+  .form-grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .form-grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .form-field {
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .form-label {
+    font-size: 0.875rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  .form-actions {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+  
+  .form-actions button {
+    width: 100% !important;
+  }
+}
+
+/* تحسينات للجداول على الشاشات الصغيرة */
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .table-responsive th,
+  .table-responsive td {
+    white-space: nowrap;
+    padding: 0.5rem !important;
+  }
+  
+  .table-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  /* تحويل جداول البيانات الكبيرة إلى بطاقات على الشاشات الصغيرة جداً */
+  @media (max-width: 480px) {
+    .table-responsive-cards {
+      display: block;
+    }
+    
+    .table-responsive-cards thead {
+      display: none;
+    }
+    
+    .table-responsive-cards tr {
+      display: block;
+      margin-bottom: 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.375rem;
+    }
+    
+    .table-responsive-cards td {
+      display: flex;
+      text-align: right;
+      padding: 0.5rem !important;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .table-responsive-cards td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      margin-left: auto;
+      margin-right: 0.5rem;
+    }
+    
+    .table-responsive-cards td:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+/* إصلاحات خاصة بدعم RTL للعربية على الشاشات الصغيرة */
+html[dir="rtl"] .card-responsive,
+html[dir="rtl"] .responsive-container,
+html[dir="rtl"] .stats-card {
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  html[dir="rtl"] .rtl-flex-reverse {
+    flex-direction: column-reverse !important;
+  }
+  
+  html[dir="rtl"] .truncate-rtl {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* تحسينات توضع العناصر للدعم متعدد اللغات */
+.multilingual-input-container {
+  position: relative;
+}
+
+.multilingual-input-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+}
+
+html[dir="rtl"] .multilingual-input-icon {
+  left: auto;
+  right: 0.75rem;
+}
+
+/* تحسينات للأرقام في واجهة RTL */
+html[dir="rtl"] .ltr-numerals {
+  direction: ltr;
+  display: inline-block;
+}
+
+/* تصميم مستجيب للتنبيهات والرسائل */
+.alert-responsive {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 640px) {
+  .alert-responsive {
+    padding: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* تحسينات نقاط النهاية للطباعة */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-full-width {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .print-break-avoid {
+    page-break-inside: avoid;
+  }
+  
+  body {
+    background: white !important;
+  }
+  
+  .print-container {
+    padding: 0.5cm !important;
+  }
+}
