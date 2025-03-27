@@ -1,0 +1,31 @@
+.butter-bakery-logo {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' fill='none'%3E%3Cpath d='M16.5 101.5C34 96 57.5 79 83 100.5C91.5 108 89 123 78 127.5C67 132 52.5 120 62 108C71.5 96 80.5 104 99 105C117.5 106 122 90 140 91.5C158 93 165 105 177 100.5' stroke='%23F57C00' stroke-width='8' stroke-linecap='round'/%3E%3Cpath d='M162 97.5C178 97.5 182 114 195 111C208 108 213 89 228.5 93C244 97 243 107.5 250 103.5C257 99.5 266.5 89 282 90C297.5 91 307.5 99.5 325.5 99.5C343.5 99.5 368 94 385 99.5' stroke='%23F57C00' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  position: relative;
+}
+
+.butter-bakery-logo::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 10 10'%3E%3Ccircle cx='5' cy='5' r='1' fill='%23FFD54F' fill-opacity='0.3'/%3E%3C/svg%3E");
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+  border-radius: 50%;
+}
+
+.butter-bakery-logo:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(245, 124, 0, 0.4);
+}
+
+.butter-bakery-logo:hover::after {
+  opacity: 1;
+}
