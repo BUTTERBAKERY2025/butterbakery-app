@@ -1,10 +1,30 @@
 services:
   - type: web
-    name: butterbakery-db
+    name: butterbakery-ops
     env: node
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: npm install && npm run build
+    startCommand: node start.js
+    nodeVersion: 22.0.0
     envVars:
+      - key: NODE_ENV
+        value: production
       - key: DATABASE_URL
-        sync: false
-    plan: free
+        fromDatabase:
+          name: butterbakery-db
+          property: connectionString
+
+  - type: web
+    name: butterbakery-client
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./client/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+databases:
+  - name: butterbakery-db
+    databaseName: butterbakery
+    user: butterbakery_admin
+    plan: starter
